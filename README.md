@@ -1,6 +1,6 @@
 因新学的ansible,所以本文摘自大佬lework的杰作
 想完整的学习的可以访问 https://img.shields.io/github/license/lework/Ansible-roles
-整个Ansible Role模仿,当然细节部分会根据公司需求进行调整，也会有自己的技术栈特点。再次感谢lework分享的知识点。
+整个框架Ansible Role模仿,当然细节部分会根据公司需求进行调整，也会有自己的技术栈特点。再次感谢lework分享的知识点。
 
 # **Ansible roles 怎么用？** ![GitHub](https://img.shields.io/github/license/lework/Ansible-roles) 
 

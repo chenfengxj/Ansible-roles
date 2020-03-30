@@ -1,0 +1,53 @@
+- name: check if exists nginx process
+  shell: ps -ef | grep nginx | grep -v grep | wc -l
+  register: ng_prc
+
+- name: check if exists nginx dir
+  stat: path={{ nginx_install_path }}
+  register: ng_dir_stat
+
+- name: check nginx installed and force exit
+  fail: msg="maybe nginx has been installed in this system,please check it!"
+  when: ng_prc.stdout != "0" or ng_dir_stat.stat.exists
+
+- name: clean {{ tengine_git_path }}
+  file: path={{ tengine_git_path }} state=absent
+
+- name: yum pkg for nginx install
+  yum: name={{ item }} state=latest
+  with_items:
+    - gcc
+    - git
+    - openssl
+    - openssl-devel
+    - pcre
+    - pcre-devel
+
+- name: git clone tengine repo
+  git:
+    repo: https://github.com/chenfengxj/tengine.git
+    dest: "{{ tengine_git_path }}"
+    ssh_opts: '-o StrictHostKeyChecking=no'
+    force: yes
+
+- name: chmod u+x configure
+  file: path={{ tengine_git_path }}/{{ item }} mode=0755
+  with_items:
+     - configure
+     - nginx
+     - nginx.service
+
+- name: install nginx
+  shell: cd {{ tengine_git_path }};./configure;make && make install
+
+- name: config power on service in centos6
+  shell: "cp -p {{ tengine_git_path }}/nginx /etc/init.d/;chkconfig nginx on "
+  notify:
+   - start nginx
+  when: ansible_distribution == 'CentOS' and ansible_distribution_major_version == "6"
+
+- name: config power on service in centos7
+  shell: "cp -p {{ tengine_git_path }}/nginx.service /usr/lib/systemd/system/;systemctl enable nginx.service"
+  notify:
+   - start nginx
+  when: ansible_distribution == 'CentOS' and ansible_distribution_major_version == "7"

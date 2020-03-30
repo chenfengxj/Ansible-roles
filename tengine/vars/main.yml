@@ -1,0 +1,2 @@
+nginx_install_path: /usr/local/nginx
+tengine_git_path: /fenku/tengine
